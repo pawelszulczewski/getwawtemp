@@ -1,0 +1,18 @@
+#!/bin/bash
+IFS=$'\n'
+FILE=http://www.if.pw.edu.pl/~meteo/index.php
+
+for i in `curl -s $FILE | grep 'ff7777\|00bbff'`
+do    
+    BKGD=`echo $i | perl -ne 'if ($_ =~ m/background:#(.*?);/) {print "$1"};'`
+
+    if [ $BKGD  = ff7777 ] 
+    then
+	TEKST="Air temperature"
+    else
+	TEKST="Wind chill"
+    fi
+
+    TEMP=`echo $i | perl -ne 'if ($_ =~ m/\&nbsp;(.*?)&nbsp;/) {print "$1"};'`
+    echo $TEKST ":" $TEMP | iconv -f iso-8859-2 -t utf-8
+done
